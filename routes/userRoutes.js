@@ -9,7 +9,7 @@ import { createUser, login } from '../controllers/userController.js';
 
 const router = express.Router();
 
-router.post('/register',
+router.post('/auth/register',
 
 body('name').notEmpty().withMessage('Debe ingresar un nombre'),
 
@@ -24,7 +24,7 @@ body('email').isEmail().withMessage('Debe tener un email válido')
     
 , validateInputs, createUser);
 
-router.post('/login', body('email').isEmail().withMessage('Debe tener un email válido'),
+router.post('/auth/login', body('email').isEmail().withMessage('Debe tener un email válido'),
 body('password').notEmpty().withMessage('Debe ingresar un password'),
 validateInputs, login)
 

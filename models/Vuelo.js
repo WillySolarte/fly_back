@@ -43,6 +43,7 @@ const Vuelo = db.define('vuelo', {
     },
     
     
+    
 
 });
 

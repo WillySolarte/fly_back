@@ -1,6 +1,6 @@
 import { checkPassword, hashPassword } from "../helpers/auth.js";
 import { generateJWT } from "../helpers/jwt.js";
-import User from "../models/User.js"
+import {User} from "../models/Index.js";
 
 export const createUser = async (req, res) => {
 
@@ -14,8 +14,8 @@ export const createUser = async (req, res) => {
             }
         })
         if(userExist){
-            const error = new Error('El usuario ya está registrado')
-            return res.status(409).json({error: error.message})
+            const error = 'El usuario ya está registrado'
+            return res.json({error: error, data: null, success: ""})
         }
         let pass = await hashPassword(password)
 
@@ -25,7 +25,7 @@ export const createUser = async (req, res) => {
             password: pass
         })
 
-        res.json('Usuario creado correctamente')
+        res.json({error: null, data: {msg: "Usuario registrado de forma correcta", data: null}, success: true})
         
     } catch (error) {
         const outError = new Error("Error en la comunicación con la BD")
@@ -47,18 +47,21 @@ export const login = async (req, res) => {
             }
         })
         if(!user){
-            const outError = new Error("Usuario no encontrado")
-            return res.status(404).json({error: outError.message})
+            const outError = "Usuario no encontrado"
+            return res.json({error: outError, data: null, success: ""})
+            
         }
         const isPassCorrect = await checkPassword(password, user.password)
 
         if(!isPassCorrect){
-            const outError = new Error("Password incorrecto")
-            return res.status(404).json({error: outError.message})
+            const outError = "Password incorrecto"
+            return res.json({error: outError, data: null, success: ""})
+            
         }
         const token = generateJWT(user.id)
 
-        res.send(token)
+        res.json({error: null, data: {msg: "Usuario logeado", data: token}, success: true})
+
         
     } catch (error) {
         const outError = new Error("Error en la comunicación con la BD")
