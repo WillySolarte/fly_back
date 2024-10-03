@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors'
 
+
 import db from './config/db.js';
 import flightRoutes from './routes/flightRoutes.js'
 import userRoutes from './routes/userRoutes.js'
