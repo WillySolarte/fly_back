@@ -47,20 +47,19 @@ export const login = async (req, res) => {
             }
         })
         if(!user){
-            const outError = "Usuario no encontrado"
-            return res.json({error: outError, data: null, success: ""})
+            const outError = new Error("Usuario no encontrado")
+            return res.status(404).json({error: outError.message})
             
         }
         const isPassCorrect = await checkPassword(password, user.password)
 
         if(!isPassCorrect){
-            const outError = "Password incorrecto"
-            return res.json({error: outError, data: null, success: ""})
+            const outError = new Error("Password incorrecto")
+            return res.status(404).json({error: outError.message})
             
         }
         const token = generateJWT(user.id)
-
-        res.json({error: null, data: {msg: "Usuario logeado", data: token}, success: true})
+        res.send(token)
 
         
     } catch (error) {
@@ -69,4 +68,8 @@ export const login = async (req, res) => {
     }
     
 
+}
+
+export const getUser = async (req, res) => {
+    res.send(req.usuario)
 }

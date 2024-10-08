@@ -4,7 +4,8 @@ import { body } from 'express-validator';
 
 import { validateInputs } from '../middleware/validation.js';
 
-import { createUser, login } from '../controllers/userController.js';
+import { createUser, getUser, login } from '../controllers/userController.js';
+import { verifyToken } from '../middleware/authRevition.js';
 
 
 const router = express.Router();
@@ -27,6 +28,8 @@ body('email').isEmail().withMessage('Debe tener un email válido')
 router.post('/auth/login', body('email').isEmail().withMessage('Debe tener un email válido'),
 body('password').notEmpty().withMessage('Debe ingresar un password'),
 validateInputs, login)
+
+router.get('/auth/user', verifyToken, getUser)
 
 
 export default router;
