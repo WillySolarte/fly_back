@@ -1,19 +1,18 @@
-import { Sequelize } from "sequelize";
-import {Reserve, Vuelo} from "../models/Index.js";
+import {Aerline, Reserve, Vuelo} from "../models/Index.js";
 
 export const createFlight = async (req, res) => {
 
     try {
-        const {name, origin, destination, price, airline, leave, arrive} = req.body
+        const {code, origin, destination, price, leave, arrive, aerlineId} = req.body
         
         const newFlight =  Vuelo.create({
-            name,
+            code,
             origin,
             destination,
             price,
-            airline,
             leave,
             arrive,
+            aerlineId,
             userId: req.usuario.id
         })
         
@@ -31,7 +30,12 @@ export const getAllFlights = async (req, res) => {
 
     try {
 
-        const flights = await Vuelo.findAll()
+        const flights = await Vuelo.findAll({
+            include: {
+                model: Aerline,    
+                attributes: ['name'],
+            },
+        })
         res.json(flights)
         
     } catch (error) {
@@ -51,6 +55,10 @@ export const getMyFlights = async (req, res) => {
             const flights = await Vuelo.findAll({
                 where: {
                     userId: id
+                },
+                include: {
+                    model: Aerline,    
+                    attributes: ['name'],
                 }
             }) 
             res.json(flights)
@@ -103,7 +111,6 @@ export const updateFlight = async (req, res) => {
             const error = new Error("Acción no válida")
             return res.status(404).json({error: error.message})
         }
-        flight.name = req.body.name
         flight.origin = req.body.origin
         flight.destination = req.body.destination
         flight.price = req.body.price
@@ -183,26 +190,36 @@ export const saveReserve = async (req, res) => {
 
 }
 
-export const getAirlinesWithMostReservations = async (req, res) => {
+export const createAerline = async (req, res) => {
+
     try {
-      const airlinesData = await Reserve.findAll({
-        include: [
-          {
-            model: Vuelo,
-            attributes: ['airline'],
-          }
-        ],
-        attributes: [
-          [Sequelize.fn('COUNT', Sequelize.col('Vuelo.id')), 'reservationsCount'],
-        ],
-        group: ['Vuelo.airline'],
-        order: [[Sequelize.literal('reservationsCount'), 'DESC']],
-      });
-  
-      res.json(airlinesData);
-  
+        const {name} = req.body
+        
+        const newFlight =  Aerline.create({
+            name
+        })
+        
+        res.send("Aerolínea registrada correctamente")
+        
     } catch (error) {
         const outError = new Error("Error al consultar la BD")
         return res.status(404).json({error: outError.message, msg: error})
     }
-};
+    
+
+}
+
+export const getAerlines = async (req, res) => {
+
+    try {
+
+        const aerlines = await Aerline.findAll()
+        res.json(aerlines)
+        
+    } catch (error) {
+        const outError = new Error("Error al consultar la BD")
+        return res.status(404).json({error: outError.message, msg: error})
+    }
+    
+
+}

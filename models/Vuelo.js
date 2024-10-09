@@ -8,8 +8,8 @@ const Vuelo = db.define('vuelo', {
         allowNull: false,
         primaryKey: true
     },
-    name: {
-        type: DataTypes.STRING(100),
+    code: {
+        type: DataTypes.STRING(50),
         allowNull: false
     },
     origin: {
@@ -26,11 +26,6 @@ const Vuelo = db.define('vuelo', {
         allowNull: false
     },
     
-    airline: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    
     leave: {
         type: DataTypes.DATE,
         allowNull: false
@@ -41,13 +36,6 @@ const Vuelo = db.define('vuelo', {
         allowNull: false
 
     },
-    reserve: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-    }
-    
-    
     
 
 });
