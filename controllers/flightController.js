@@ -78,7 +78,12 @@ export const getFlightById = async (req, res) => {
 
     try {
         const {id} = req.params
-        const flight = await Vuelo.findByPk(id)
+        const flight = await Vuelo.findByPk(id, {
+            include: {
+                model: Aerline,    
+                attributes: ['name'],
+            }
+        })
         if(!flight){
             const error = new Error("Vuelo no encontrado")
             return res.status(404).json({error: error.message})
@@ -88,6 +93,32 @@ export const getFlightById = async (req, res) => {
             const error = new Error("Acción no válida")
             return res.status(404).json({error: error.message})
         }
+        res.status(200).json(flight)
+        
+    } catch (error) {
+        const outError = new Error("Error al consultar la BD")
+        return res.status(404).json({error: outError.message, msg: error})
+    }
+    
+
+}
+export const showFlightById = async (req, res) => {
+
+    try {
+        const {id} = req.params
+        
+        const flight = await Vuelo.findByPk(id, {
+            include: {
+                model: Aerline,    
+                attributes: ['name'],
+            }
+        })
+        if(!flight){
+            const error = new Error("Vuelo no encontrado")
+            return res.status(404).json({error: error.message})
+            
+        }
+        
         res.status(200).json(flight)
         
     } catch (error) {
@@ -222,4 +253,31 @@ export const getAerlines = async (req, res) => {
     }
     
 
+}
+
+export const getExistReserve = async (req, res) => {
+
+    
+    try {
+        const userId = req.usuario.id;
+        const {id} = req.params
+        
+        const reserve = await Reserve.findOne({
+            where: {
+                userId,
+                flightId: id
+            },
+            
+        })
+        if(reserve){
+            res.json({msg: "Cancelar Reserva"})
+        }
+        else{
+            res.json({msg: "Reservar"})
+        } 
+        
+    } catch (error) {
+        const outError = new Error("Error al consultar la BD")
+        return res.status(404).json({error: outError.message, msg: error})
+    }
 }
