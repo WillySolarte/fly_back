@@ -193,40 +193,12 @@ export const deleteFlightById = async (req, res) => {
 
 
 
-export const saveReserve = async (req, res) => {
-
-    try {
-        const {id} = req.params
-        const flight = await Vuelo.findByPk(id)
-        if(!flight){
-            const error = new Error("Vuelo no encontrado")
-            return res.status(404).json({error: error.message})
-            
-        }
-        
-
-
-        await Reserve.create({
-            userId: req.usuario.id,
-            flightId: id
-        })
-        
-        res.send("Vuelo reservado correctamente")
-        
-    } catch (error) {
-        const outError = new Error("Error al consultar la BD")
-        return res.status(404).json({error: outError.message, msg: error})
-    }
-    
-
-}
-
 export const createAerline = async (req, res) => {
 
     try {
         const {name} = req.body
         
-        const newFlight =  Aerline.create({
+        const newFlight = await  Aerline.create({
             name
         })
         
@@ -255,6 +227,8 @@ export const getAerlines = async (req, res) => {
 
 }
 
+/**Reserves */
+
 export const getExistReserve = async (req, res) => {
 
     
@@ -280,4 +254,69 @@ export const getExistReserve = async (req, res) => {
         const outError = new Error("Error al consultar la BD")
         return res.status(404).json({error: outError.message, msg: error})
     }
+}
+
+export const createDeleteReserve = async (req, res) => {
+
+    
+    try {
+        const userId = req.usuario.id;
+        const {id} = req.params
+        
+        const reserve = await Reserve.findOne({
+            where: {
+                userId,
+                flightId: id
+            },
+            
+        })
+        if(reserve){
+            await Reserve.destroy({
+                where: {
+                    userId,
+                    flightId: id
+                },
+            })
+            res.send('Reserva Cancelada')
+        }
+        else{
+            await Reserve.create({
+                userId,
+                flightId: id
+            })
+            res.send('Reserva Creada')
+        } 
+        
+    } catch (error) {
+        const outError = new Error("Error al consultar la BD")
+        return res.status(404).json({error: outError.message, msg: error})
+    }
+}
+
+export const getMyReserves = async (req, res) => {
+
+    try {
+        const userId = req.usuario.id;
+        const reserves = await Reserve.findAll({
+            where: {
+                userId
+            },
+            include: {
+                model: Vuelo,    
+                attributes: ['code', 'origin', 'destination', 'aerlineId'],
+                include: {
+                    model: Aerline, 
+                    attributes: ['name'], 
+                }
+            },
+            
+        })
+        res.json(reserves)
+        
+    } catch (error) {
+        const outError = new Error("Error al consultar la BD")
+        return res.status(404).json({error: outError.message, msg: error})
+    }
+    
+
 }
