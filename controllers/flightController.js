@@ -1,4 +1,5 @@
-import {Aerline, Reserve, Vuelo} from "../models/Index.js";
+import {Aerline, Reserve, User, Vuelo} from "../models/Index.js";
+import { Sequelize } from "sequelize";
 
 export const createFlight = async (req, res) => {
 
@@ -320,3 +321,36 @@ export const getMyReserves = async (req, res) => {
     
 
 }
+
+/**Estadísticas */
+
+export const getImportantData = async (req, res) => {
+
+    try {
+
+        const [flights, users, aerlines] = await Promise.allSettled([Vuelo.count(), User.count(), Aerline.count()])
+
+        const reserves = await Reserve.findAll({
+            attributes: ['flightId', [Sequelize.fn('COUNT', Sequelize.col('flightId')), 'reservationsCount']],
+            include: {
+                model: Vuelo,    
+                attributes: ['code', 'origin', 'destination'],
+            },
+            group: ['flightId']
+        });
+       
+
+        const data = {
+            flights,
+            users,
+            aerlines,
+            reserves
+        }
+        res.json(data)
+        
+    } catch (error) {
+        const outError = new Error("Error al consultar la BD")
+        return res.status(404).json({error: outError.message, msg: error})
+    }
+}
+

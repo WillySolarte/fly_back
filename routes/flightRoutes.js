@@ -1,6 +1,6 @@
 import express from 'express'
 
-import { createAerline, createDeleteReserve, createFlight, deleteFlightById, getAerlines, getAllFlights, getExistReserve, getFlightById, getMyFlights, getMyReserves, showFlightById, updateFlight } from '../controllers/flightController.js';
+import {  createAerline, createDeleteReserve, createFlight, deleteFlightById, getAerlines, getAllFlights, getExistReserve, getFlightById, getImportantData, getMyFlights, getMyReserves, showFlightById, updateFlight } from '../controllers/flightController.js';
 import { verifyToken } from '../middleware/authRevition.js';
 
 const router = express.Router();
@@ -17,9 +17,11 @@ router.get('/exist-reserve/:id', verifyToken,  getExistReserve);
 router.post('/create-delete/reserve/:id', verifyToken,  createDeleteReserve);
 router.get('/my-reserves', verifyToken,  getMyReserves);
 
+router.get('/all-data',  getImportantData);
+router.get('/all-data',  getImportantData);
+
 /**Aerolínea */
 router.post('/create-aerline', verifyToken, createAerline);
-router.get('/get-aerlines', getAerlines);
 
 
 
