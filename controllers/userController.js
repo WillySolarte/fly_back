@@ -14,8 +14,8 @@ export const createUser = async (req, res) => {
             }
         })
         if(userExist){
-            const error = 'El usuario ya está registrado'
-            return res.json({error: error, data: null, success: ""})
+            const error = new Error("El usuario ya está registrado")
+            return res.status(404).json({error: error.message})
         }
         let pass = await hashPassword(password)
 
@@ -25,7 +25,7 @@ export const createUser = async (req, res) => {
             password: pass
         })
 
-        res.json({error: null, data: {msg: "Usuario registrado de forma correcta", data: null}, success: true})
+        res.send("Usuario registrado de forma correcta")
         
     } catch (error) {
         const outError = new Error("Error en la comunicación con la BD")

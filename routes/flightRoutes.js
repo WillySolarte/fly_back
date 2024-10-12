@@ -16,6 +16,7 @@ router.delete('/delete/:id', verifyToken,  deleteFlightById);
 router.get('/exist-reserve/:id', verifyToken,  getExistReserve);
 router.post('/create-delete/reserve/:id', verifyToken,  createDeleteReserve);
 router.get('/my-reserves', verifyToken,  getMyReserves);
+router.get('/get-aerlines', verifyToken, getAerlines)
 
 router.get('/all-data',  getImportantData);
 router.get('/all-data',  getImportantData);
